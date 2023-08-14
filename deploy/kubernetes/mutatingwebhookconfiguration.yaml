@@ -1,0 +1,37 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: kube-resourceless
+  labels:
+    app: kube-resourceless
+  annotations:
+    cert-manager.io/inject-ca-from: kube-resourceless/kube-resourceless
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      namespace: kube-resourceless
+      name: kube-resourceless
+      port: 8443
+      path: "/mutate"
+  failurePolicy: Fail
+  name: kube-resourceless.airfocus.io
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: NotIn
+      values:
+      - "kube-system"
+      - "kube-resourceless"
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - pods
+  sideEffects: None

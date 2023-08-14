@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-resourceless
+  namespace: kube-resourceless
+  labels:
+    app: kube-resourceless
+spec:
+  selector:
+    matchLabels:
+      app: kube-resourceless
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kube-resourceless
+    spec:
+      containers:
+      - name: kube-resourceless
+        image: ghcr.io/airfocusio/kube-resourceless:latest
+        volumeMounts:
+        - name: tls
+          mountPath: "/etc/certs"
+          readOnly: true
+      terminationGracePeriodSeconds: 3
+      volumes:
+      - name: tls
+        secret:
+          secretName: kube-resourceless-tls
+          optional: false

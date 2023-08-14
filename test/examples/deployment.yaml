@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+  labels:
+    app: deplpoyment
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: deplpoyment
+  template:
+    metadata:
+      labels:
+        app: deplpoyment
+    spec:
+      containers:
+      - name: container-1
+        image: nginx:alpine
+        command:
+        - sleep
+        args:
+        - infinite
+        resources:
+          requests:
+            cpu: 2000m
+            memory: 4096Mi
+          limits:
+            cpu: 4000m
+            memory: 4096Mi
+      - name: container-2
+        image: nginx:alpine
+        command:
+        - sleep
+        args:
+        - infinite
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+      - name: container-3
+        image: nginx:alpine
+        command:
+        - sleep
+        args:
+        - infinite
+      initContainers:
+        - name: init-container-1
+          image: nginx:alpine
+          command:
+          - echo
+          args:
+          - done
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+        - name: init-container-2
+          image: nginx:alpine
+          command:
+          - echo
+          args:
+          - done
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+        - name: init-container-3
+          image: nginx:alpine
+          command:
+          - echo
+          args:
+          - done

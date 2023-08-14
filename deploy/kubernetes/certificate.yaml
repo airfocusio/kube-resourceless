@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: kube-resourceless
+  namespace: kube-resourceless
+  labels:
+    app: kube-resourceless
+spec:
+  secretName: kube-resourceless-tls
+  dnsNames:
+  - kube-resourceless
+  - kube-resourceless.kube-resourceless.svc
+  issuerRef:
+    name: selfsigned

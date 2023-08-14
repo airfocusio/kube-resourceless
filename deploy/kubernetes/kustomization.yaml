@@ -1,0 +1,7 @@
+resources:
+- namespace.yaml
+- issuer.yaml
+- certificate.yaml
+- service.yaml
+- deployment.yaml
+- mutatingwebhookconfiguration.yaml
