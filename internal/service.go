@@ -88,11 +88,6 @@ func (s *Service) Run(stop <-chan os.Signal) error {
 }
 
 func (s *Service) Mutate(ar admission.AdmissionReview) *admission.AdmissionResponse {
-	// Info.Printf("mutating\n")
-	// pt := admission.PatchTypeJSONPatch
-	// return &admission.AdmissionResponse{Allowed: true, PatchType: &pt, Patch: []byte(fmt.Sprintf(`[{"op":"replace","path":"","value":%s}]`, strings.ReplaceAll(string(ar.Request.Object.Raw), "${VAR}", "var-value")))}
-
-	Info.Printf("mutating pod")
 	podResource := metav1.GroupVersionResource{Group: "", Version: "v1", Resource: "pods"}
 	if ar.Request.Resource != podResource {
 		Error.Printf("expect resource to be %s\n", podResource)
@@ -103,11 +98,13 @@ func (s *Service) Mutate(ar admission.AdmissionReview) *admission.AdmissionRespo
 		}
 	}
 
+	Info.Printf("mutating pod")
+
 	raw := ar.Request.Object.Raw
 	pod := corev1.Pod{}
 
 	if _, _, err := deserializer.Decode(raw, nil, &pod); err != nil {
-		Error.Printf("error: %v\n", err)
+		Error.Printf("deserialization failed: %v\n", err)
 		return &admission.AdmissionResponse{
 			Result: &metav1.Status{
 				Message: err.Error(),
@@ -124,7 +121,6 @@ func (s *Service) Mutate(ar admission.AdmissionReview) *admission.AdmissionRespo
 		patchOps = append(patchOps, fmt.Sprintf(`{"op":"remove","path":"/spec/initContainers/%d/resources"}`, i))
 	}
 	patch := fmt.Sprintf("[%s]", strings.Join(patchOps, ","))
-	Info.Printf("%+v\n", patch)
 	return &admission.AdmissionResponse{Allowed: true, PatchType: &patchType, Patch: []byte(patch)}
 }
 
@@ -144,7 +140,7 @@ func (s *Service) ServeAdmitHandler(w http.ResponseWriter, r *http.Request, admi
 		return
 	}
 
-	Info.Printf("handling request: %s", body)
+	Debug.Printf("handling request: %s", body)
 	var responseObj runtime.Object
 	if obj, gvk, err := deserializer.Decode(body, nil, nil); err != nil {
 		Error.Printf("decoding request failed: %v", err)
@@ -164,7 +160,7 @@ func (s *Service) ServeAdmitHandler(w http.ResponseWriter, r *http.Request, admi
 		responseObj = responseAdmissionReview
 
 	}
-	Info.Printf("sending response: %v\n", responseObj)
+	Debug.Printf("sending response: %v\n", responseObj)
 	respBytes, err := json.Marshal(responseObj)
 	if err != nil {
 		Error.Printf("marshalling response failed: %v\n", err)

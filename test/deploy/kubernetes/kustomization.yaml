@@ -3,3 +3,14 @@ resources:
 images:
 - name: ghcr.io/airfocusio/kube-resourceless
   newTag: 0.0.0-dev-amd64
+patches:
+  - target:
+      version: v1
+      group: apps
+      kind: Deployment
+      name: kube-resourceless
+    patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/args
+        value:
+        - --verbose

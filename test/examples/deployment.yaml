@@ -23,11 +23,11 @@ spec:
         - infinite
         resources:
           requests:
-            cpu: 2000m
-            memory: 4096Mi
+            cpu: 100m
+            memory: 128Mi
           limits:
-            cpu: 4000m
-            memory: 4096Mi
+            cpu: 100m
+            memory: 128Mi
       - name: container-2
         image: nginx:alpine
         command:
