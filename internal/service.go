@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -76,14 +77,30 @@ func NewService(opts ServiceOpts) (*Service, error) {
 }
 
 func (s *Service) Run(stop <-chan os.Signal) error {
+	Info.Printf("starting server...\n")
+
+	certLoader := CertLoader{
+		CertFile: s.Opts.TLSCertFile,
+		KeyFile:  s.Opts.TLSKeyFile,
+	}
+	tlsConfig := &tls.Config{
+		GetCertificate: certLoader.GetCertificate,
+	}
+	tlsListener, err := tls.Listen("tcp", ":8443", tlsConfig)
+	if err != nil {
+		Error.Printf("listening failed: %v\n", err)
+		return err
+	}
+
 	http.HandleFunc("/mutate", func(w http.ResponseWriter, r *http.Request) {
 		s.ServeAdmitHandler(w, r, AdmitHandler(s.Mutate))
 	})
-	Info.Printf("starting server...\n")
-	if err := http.ListenAndServeTLS(":8443", s.Opts.TLSCertFile, s.Opts.TLSKeyFile, nil); err != nil {
+
+	if err := http.Serve(tlsListener, nil); err != nil {
 		Error.Printf("starting server failed: %v\n", err)
 		return err
 	}
+
 	return nil
 }
 

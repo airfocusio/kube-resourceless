@@ -14,6 +14,7 @@ spec:
       labels:
         app: deplpoyment
     spec:
+      terminationGracePeriodSeconds: 1
       containers:
       - name: container-1
         image: nginx:alpine

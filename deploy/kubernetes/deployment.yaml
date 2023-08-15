@@ -15,6 +15,7 @@ spec:
       labels:
         app: kube-resourceless
     spec:
+      terminationGracePeriodSeconds: 3
       containers:
       - name: kube-resourceless
         image: ghcr.io/airfocusio/kube-resourceless:latest
@@ -22,7 +23,6 @@ spec:
         - name: tls
           mountPath: "/etc/certs"
           readOnly: true
-      terminationGracePeriodSeconds: 3
       volumes:
       - name: tls
         secret:
