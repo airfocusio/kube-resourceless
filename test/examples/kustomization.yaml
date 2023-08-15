@@ -1,2 +1,3 @@
 resources:
-- deployment.yaml
+- namespace-match
+- namespace-notmatch

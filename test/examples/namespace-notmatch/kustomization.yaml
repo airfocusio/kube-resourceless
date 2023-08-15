@@ -1,0 +1,4 @@
+namespace: namespace-notmatch
+resources:
+- namespace.yaml
+- deployment.yaml

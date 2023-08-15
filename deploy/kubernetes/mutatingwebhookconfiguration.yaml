@@ -19,11 +19,10 @@ webhooks:
   name: kube-resourceless.airfocus.io
   namespaceSelector:
     matchExpressions:
-    - key: kubernetes.io/metadata.name
-      operator: NotIn
+    - key: kube-resourceless.airfocus.io/enabled
+      operator: In
       values:
-      - "kube-system"
-      - "kube-resourceless"
+      - "true"
   rules:
   - apiGroups:
     - ""
